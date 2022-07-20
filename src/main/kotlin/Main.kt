@@ -94,6 +94,5 @@ fun main(args: Array<String>) {
             else -> println("Incorrect option! Try again.")
         }
     }
-
 }
 
