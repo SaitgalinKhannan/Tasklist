@@ -1,98 +1,135 @@
-import java.io.File
+import kotlinx.datetime.*
 
-enum class SearchStrategies {
-    ALL, ANY, NONE
-}
+fun addPriority(): String {
 
-fun showMenu() {
-
-    println(
-        "=== Menu ===\n" + "1. Search information.\n" + "2. Print all data.\n" + "0. Exit."
-    )
-}
-
-fun showAllData(lst: List<String>) {
-
-    for (item in lst) {
-        println(item)
-    }
-}
-
-fun inputFromFile(args: Array<String>): List<String> {
-
-    val fileName = "C:/Users/Khann/OneDrive/Рабочий стол/KotlinJB/text.txt"
-    var lines = emptyList<String>()
-
-    if (args.isNotEmpty()) { //файл передается как аргумент в функцию search.main
-        val file = File(args[1])
-
-        if (file.exists()) {
-            lines = file.readLines()
+    var chP: String
+    while (true) {
+        println("Input the task priority (C, H, N, L):")
+        chP = readln().lowercase()
+        if (chP == "c" || chP == "h" || chP == "n" || chP == "l") {
+            break
         }
-    } else { //чтение файла, который находится в какой-то директории
-        if (File(fileName).exists()) lines = File(fileName).readLines()
     }
-
-    return lines
+    return chP
 }
 
-fun invertedIndex(lst: List<String>): MutableMap<String, MutableList<Int>> {
+fun addData(): String {
 
-    val map: MutableMap<String, MutableList<Int>> = mutableMapOf()
-    val allElemList = mutableListOf<String>()
-
-    for (item in lst) { // получаем все слова по отдельности
-        val list1 = item.split(" ")
-        allElemList.addAll(list1)
-    }
-
-    for (i in allElemList) {
-        val wordIndexes = mutableListOf<Int>()
-
-        for (j in lst.indices) {
-            if (i in lst[j]) {
-                wordIndexes.add(j)
+    var lst: MutableList<String>
+    var chD: LocalDate
+    while (true) {
+        println("Input the date (yyyy-mm-dd):")
+        try {
+            lst = readln().split("-") as MutableList<String>
+            if (lst[1].length == 1) {
+                lst[1] = "0" + lst[1]
             }
+            if (lst[2].length == 1) {
+                lst[2] = "0" + lst[2]
+            }
+            chD = lst.joinToString("-").toLocalDate()
+            break
+        } catch (e: Exception) {
+            println("The input date is invalid")
         }
-        map[i.lowercase()] = wordIndexes
     }
-
-    return map
+    return chD.toString()
 }
 
-fun searchInfo(lst: List<String>, map: Map<String, MutableList<Int>>) {
+fun addTime(): String {
 
-    println("Select a matching strategy: ALL, ANY, NONE")
-    val strategy = SearchStrategies.valueOf(readln())
-
-    println("Enter a name or email to search all matching people.")
-    val queries = readln().lowercase().split(" ")
-
-    val result: List<String> = when (strategy) {
-        SearchStrategies.ALL -> lst.filter { list -> queries.map { it in list.lowercase() }.all { it } }
-        SearchStrategies.ANY -> map.filterKeys { it in queries }.values.flatten().map { lst[it] }
-        SearchStrategies.NONE -> lst.filter { list -> queries.map { it !in list.lowercase() }.all { it } }
+    var lst: MutableList<String>
+    var chT: LocalTime
+    while (true) {
+        println("Input the time (hh:mm):")
+        try {
+            lst = readln().split(":") as MutableList<String>
+            if (lst[0].length == 1) {
+                lst[0] = "0" + lst[0]
+            }
+            if (lst[1].length == 1) {
+                lst[1] = "0" + lst[1]
+            }
+            chT = lst.joinToString(":").toLocalTime()
+            break
+        } catch (e: Exception) {
+            println("The input time is invalid")
+        }
     }
-
-    val numberResults = result.size
-
-    println("$numberResults persons found:")
-    result.forEach { println(it) }
+    return chT.toString()
 }
 
-fun main(args: Array<String>) {
-
-    val lst = inputFromFile(args)
-    val map = invertedIndex(lst)
+fun menu(lst: MutableList<String>) {
 
     while (true) {
-        showMenu()
-        when (readln().toInt()) {
-            1 -> searchInfo(lst, map)
-            2 -> showAllData(lst)
-            0 -> break
-            else -> println("Incorrect option! Try again.")
+        println("Input an action (add, print, end):")
+
+        when (readln().lowercase()) {
+            "add" -> add(lst)
+            "print" -> show(lst)
+            "end" -> {
+                println("Tasklist exiting!")
+                break
+            }
+            else -> println("The input action is invalid")
         }
     }
 }
 
+fun add(lst: MutableList<String>) {
+
+    var str = ""
+    var substr: String
+    var i = 0
+    var chP: String
+    var chD: String
+    var chT: String
+    var flag = false //Data and Time is empty
+
+    while (true) {
+
+        if (!flag) {
+            chP = addPriority()
+            chD = addData()
+            chT = addTime()
+            str += chD + " " + chT + " " + chP.uppercase() + "\n" + "   "
+            println("Input a new task (enter a blank line to end):")
+            flag = true //D and T notEmpty
+        }
+
+        substr = readln()
+
+        if (substr.isEmpty() || substr.isBlank()) {
+            break
+        }
+
+        str = if (i == 0) {
+            str + substr.trim() + "\n"
+
+        } else {
+            str + "   " + substr.trim() + "\n"
+        }
+        i++
+    }
+
+    if (str.substringAfter("\n").isEmpty() || str.substringAfter("\n").isBlank()) {
+        println("The task is blank")
+    } else {
+        lst.add(str)
+    }
+}
+
+fun show(lst: MutableList<String>) {
+    if (lst.isEmpty()) {
+        println("No tasks have been input")
+    } else {
+        for (i in lst.indices) {
+            println("${String.format("%-2s", i + 1)} ${lst[i]}")
+        }
+    }
+}
+
+fun main() {
+    val lst = mutableListOf<String>()
+    menu(lst)
+}
