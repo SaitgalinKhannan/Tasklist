@@ -9,13 +9,15 @@ fun add(lst: MutableList<MutableList<String>>) {
     val currentDate = Clock.System.now().toLocalDateTime(TimeZone.of("UTC+0")).date
     var len: Int
     var tmpstr = ""
+    var tmpPrio: String
 
     while (flag1) {
         //add Data, Time, Priority
         if (!flag2) {
+            tmpPrio = addPriority()
             sublist.add(addData())
             sublist.add(addTime())
-            sublist.add(addPriority())
+            sublist.add(tmpPrio)
             val numberOfDays = currentDate.daysUntil(sublist[0].toLocalDate())
             val tmp = addPrioColor(numberOfDays)
             sublist.add(tmp)
@@ -42,7 +44,7 @@ fun add(lst: MutableList<MutableList<String>>) {
         }
     }
     //add BigTask to list
-    if (str.substringAfter("\n").isEmpty() || str.substringAfter("\n").isBlank()) {
+    if (str.isEmpty() || str.isBlank()) {
         println("The task is blank")
     } else {
         str = str.substringBeforeLast("\n")
