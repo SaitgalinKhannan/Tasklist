@@ -8,6 +8,7 @@ fun add(lst: MutableList<MutableList<String>>) {
     var flag2 = false //Data and Time is empty
     val currentDate = Clock.System.now().toLocalDateTime(TimeZone.of("UTC+0")).date
     var len: Int
+    var mod: Int
     var tmpstr = ""
     var tmpPrio: String
 
@@ -30,15 +31,19 @@ fun add(lst: MutableList<MutableList<String>>) {
             flag1 = false
         } else if (substr.length > 44) {
             len = substr.length / 44
+            mod = substr.length % 44
             loop@ for (i in 0..len) {
-                if (i == len) {
+                if (i == len && mod != 0) {
                     tmpstr += "${substr.substring(44 * i, substr.length)}\n"
+                    break@loop
+                }
+                if (i == len && mod == 0) {
+                    tmpstr += substr.substring(44 * i, substr.length)
                     break@loop
                 }
                 tmpstr += "${substr.substring(44 * i, 44 * (i + 1))}\n"
             }
             str = tmpstr
-            tmpstr = ""
         } else {
             str = "$str${substr.trim()}\n"
         }
@@ -108,8 +113,8 @@ fun addPriority(): String {
     }
     return when (chP.lowercase()) {
         "c" -> "\u001B[101m \u001B[0m"
-        "h" -> "\u001B[102m \u001B[0m"
-        "n" -> "\u001B[103m \u001B[0m"
+        "h" -> "\u001B[103m \u001B[0m"
+        "n" -> "\u001B[102m \u001B[0m"
         "l" -> "\u001B[104m \u001B[0m"
         else -> ""
     }
@@ -117,9 +122,9 @@ fun addPriority(): String {
 
 fun addPrioColor(numberOfDays: Int): String {
     return if (numberOfDays == 0) {
-        "\u001B[102m \u001B[0m"
-    } else if (numberOfDays > 0) {
         "\u001B[103m \u001B[0m"
+    } else if (numberOfDays > 0) {
+        "\u001B[102m \u001B[0m"
     } else {
         "\u001B[101m \u001B[0m"
     }

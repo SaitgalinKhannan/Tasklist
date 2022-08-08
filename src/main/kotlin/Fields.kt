@@ -129,6 +129,7 @@ fun editAddElem(lst: MutableList<MutableList<String>>, chElem: Int) {
     var substr: String
     var flag = true
     var len: Int
+    var mod: Int
     var tmpstr = ""
 
     println("Input a new task (enter a blank line to end):")
@@ -139,21 +140,26 @@ fun editAddElem(lst: MutableList<MutableList<String>>, chElem: Int) {
             flag = false
         } else if (substr.length > 44) {
             len = substr.length / 44
+            mod = substr.length % 44
             loop@ for (i in 0..len) {
-                if (i == len) {
+                if (i == len && mod != 0) {
                     tmpstr += "${substr.substring(44 * i, substr.length)}\n"
+                    break@loop
+                }
+                if (i == len && mod == 0) {
+                    tmpstr += substr.substring(44 * i, substr.length)
+                    println("flag")
                     break@loop
                 }
                 tmpstr += "${substr.substring(44 * i, 44 * (i + 1))}\n"
             }
             str = tmpstr
-            tmpstr = ""
         } else {
             str = "$str${substr.trim()}\n"
         }
     }
     //changeInList
-    if (str.substringAfter("\n").isEmpty() || str.substringAfter("\n").isBlank()) {
+    if (str.isEmpty() || str.isBlank()) {
         println("The task is blank")
     } else {
         str = str.substringBeforeLast("\n")
