@@ -1,3 +1,2 @@
-
-rootProject.name = "Test"
-
+rootProject.name = "Tasklist"
+include("TaskApp")
